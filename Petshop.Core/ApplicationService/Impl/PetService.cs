@@ -18,6 +18,18 @@ namespace Petshop.Core.ApplicationService.Impl
             _petRepo = petRepository;
         }
 
+        public Owner AddNewOwner(string firstname, string lastname, string address, string phonenr, string email)
+        {
+            Owner theNewOwner = new Owner();
+            theNewOwner.OwnerFirstName = firstname;
+            theNewOwner.OwnerLastName = lastname;
+            theNewOwner.OwnerAddress = address;
+            theNewOwner.OwnerPhoneNr = phonenr;
+            theNewOwner.OwnerEmail = email;
+
+            return _petRepo.AddNewOwner(theNewOwner);
+        }
+
         public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, long thePetPrice)
         {
             Pet theNewPet = new Pet();
@@ -60,9 +72,29 @@ namespace Petshop.Core.ApplicationService.Impl
             
         }
 
+        public Owner DeleteOwnerByID(int theId)
+        {
+            return _petRepo.DeleteOwnerById(theId);
+        }
+
         public Pet DeletePetByID(int theId)
         {
             return _petRepo.DeletePetById(theId);
+        }
+
+        public List<Pet> FindAllPetsByOwner(Owner theOwner)
+        {
+            return _petRepo.FindAllPetsByOwner(theOwner).ToList();
+        }
+
+        public Owner FindOwnerByID(int theId)
+        {
+            return _petRepo.FindOwnerByID(theId);
+        }
+
+        public List<Owner> FindOwnersByName(string theName)
+        {
+            return _petRepo.FindOwnerByName(theName).ToList();
         }
 
         public Pet FindPetByID(int theNewId)
@@ -75,6 +107,11 @@ namespace Petshop.Core.ApplicationService.Impl
             return _petRepo.FindPetsByName(theName).ToList();
         }
 
+        public List<Owner> GetAllOwners()
+        {
+            return _petRepo.GetAllOwners().ToList();
+        }
+
         public List<Pet> GetAllPets()
         {
             return _petRepo.GetAllPets().ToList();
@@ -83,6 +120,35 @@ namespace Petshop.Core.ApplicationService.Impl
         public List<Pet> GetSortedPets()
         {
             return _petRepo.GetSortedPets().ToList();
+        }
+
+        public List<Owner> SearchForOwner(int toSearchInt, string searchValue)
+        {
+            switch (toSearchInt)
+            {
+                case 1:
+                    return _petRepo.FindOwnerByName(searchValue).ToList();
+                case 2:
+                    return _petRepo.FindOwnerByAddress(searchValue).ToList();
+                case 3:
+                    return _petRepo.FindOwnerByPhonenr(searchValue).ToList();
+
+                case 4:
+                    return _petRepo.FindOwnerByEmail(searchValue).ToList();
+
+                case 5:
+                    int searchId;
+                    if (int.TryParse(searchValue, out searchId))
+                    {
+                        return new List<Owner> { _petRepo.FindOwnerByID(searchId) };
+                    }
+                    else
+                    {
+                        throw new InvalidDataException(message: "You have not given me a Nr to search the Id's for.");
+                    }
+               default:
+                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+            }
         }
 
         public List<Pet> SearchForPet(int toSearchInt, string searchValue)
@@ -177,7 +243,26 @@ namespace Petshop.Core.ApplicationService.Impl
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }
         }
-    
+
+        public Owner UpdateOwner(Owner updatedOwner, int toUpdateInt, string updateValue)
+        {
+            switch (toUpdateInt)
+            {
+                case 1:
+                    return _petRepo.UpdateFirstNameOfOwner(updatedOwner, updateValue);
+                case 2:
+                    return _petRepo.UpdateLastNameOfOwner(updatedOwner, updateValue);
+                case 3:
+                    return _petRepo.UpdateAddressOfOwner(updatedOwner, updateValue);
+                case 4:
+                    return _petRepo.UpdatePhoneNrOfOwner(updatedOwner, updateValue);
+                case 5:
+                    return _petRepo.UpdateEmailOfOwner(updatedOwner, updateValue);
+                default:
+                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+            }
+        }
+
         public Pet UpdatePet(Pet updatedPet, int toUpdateInt, string updateValue)
         {
             switch (toUpdateInt)

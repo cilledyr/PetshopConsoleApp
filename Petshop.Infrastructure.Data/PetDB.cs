@@ -176,7 +176,7 @@ namespace Petshop.Infrastructure.Data
             }
         }
 
-        internal static Pet UpdateOwnerOfPet(Pet updatedPet, Owner ownerValue)
+        internal static Pet UpdateOwnerOfPet(Pet updatedPet, int ownerId)
         {
             List<Pet> foundPets = (allThePets.Where(pet => pet == updatedPet)).ToList();
             if (foundPets.Count <= 0 || foundPets.Count > 1)
@@ -185,8 +185,17 @@ namespace Petshop.Infrastructure.Data
             }
             else
             {
-                foundPets[0].PetOwner= ownerValue;
-                return foundPets[0];
+                List<Owner> theOwner = allTheOwners.Where(owner => owner.OwnerId == ownerId).ToList();
+                if(theOwner.Count == 1)
+                {
+                    foundPets[0].PetOwner = theOwner[0];
+                    return foundPets[0];
+                }
+                else
+                {
+                    throw new InvalidDataException(message: "I am sorry the owner id seems invalid.");
+                }
+                
             }
         }
 

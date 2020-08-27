@@ -519,7 +519,7 @@ namespace Petshop.UI
             if(updatedPet != null)
             {
                 Console.WriteLine($"{userName}, you are updating ID: {updatedPet.PetId} byt the name {updatedPet.PetName}. What would you like to update, of the following, Please type the nr only.?");
-                Console.WriteLine(" 1: Name \n 2: Colour \n 3: Species \n 4: Birthday \n 5: Sold Date \n 6: Previous owner \n 7: Price \n");
+                Console.WriteLine(" 1: Name \n 2: Colour \n 3: Species \n 4: Birthday \n 5: Sold Date \n 6: Previous owner \n 7: Price \n 8: Owner \n");
                 var toUpdate = Console.ReadLine();
                 int toUpdateInt = 0;
                 string updateValue;
@@ -553,6 +553,9 @@ namespace Petshop.UI
                             break;
                         case 7:
                             Console.WriteLine($"What would you like to update the Price to be? Current Price is: {updatedPet.PetPrice}£. Please enter the price in £, nr only.");
+                            break;
+                        case 8:
+                            Console.WriteLine($"Please enter the ID of the owner you would like to place this pet under, current owner id: {updatedPet.PetOwner.OwnerId}, name: {updatedPet.PetOwner.OwnerFirstName} {updatedPet.PetOwner.OwnerLastName}");
                             break;
                         default:
                             break;

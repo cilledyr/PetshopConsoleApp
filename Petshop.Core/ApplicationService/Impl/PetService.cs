@@ -338,7 +338,16 @@ namespace Petshop.Core.ApplicationService.Impl
                     {
                         throw new InvalidDataException(message: "You have not entered a valid price.");
                     }
-
+                case 8:
+                    int id;
+                    if(int.TryParse(updateValue, out id))
+                    {
+                        return _petRepo.UpdateOwnerOfPet(updatedPet, id);
+                    }
+                    else
+                    {
+                        throw new InvalidDataException(message: "You have not entered a valid id.");
+                    }
                 default:
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }

@@ -143,9 +143,9 @@ namespace Petshop.Infrastructure.Data
             return petsByPrice;
         }
 
-        public Pet UpdateOwnerOfPet(Pet updatedPet, Owner updatedOwner)
+        public Pet UpdateOwnerOfPet(Pet updatedPet, int ownerId)
         {
-            return PetDB.UpdateOwnerOfPet(updatedPet, updatedOwner);
+            return PetDB.UpdateOwnerOfPet(updatedPet, ownerId);
         }
 
         public IEnumerable<Owner> GetAllOwners()

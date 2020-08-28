@@ -179,7 +179,7 @@ namespace Petshop.Infrastructure.Data
         internal static Pet UpdateOwnerOfPet(Pet updatedPet, int ownerId)
         {
             List<Pet> foundPets = (allThePets.Where(pet => pet == updatedPet)).ToList();
-            if (foundPets.Count <= 0 || foundPets.Count > 1)
+            if (foundPets.Count != 1)
             {
                 throw new InvalidDataException(message: "I am sorry wrong amonut of pets found");
             }

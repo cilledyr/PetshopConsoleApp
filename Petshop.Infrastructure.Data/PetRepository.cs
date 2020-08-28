@@ -109,8 +109,8 @@ namespace Petshop.Infrastructure.Data
 
         public IEnumerable<Pet> FindPetsByColor(string searchValue)
         {
-            IEnumerable<Pet> coloredPets = PetDB.allThePets.Where(pet => pet.PetColor.Equals(searchValue));
-            return coloredPets;
+            IEnumerable<Pet> petsByColor = PetDB.allThePets.Where(pet => pet.PetColor.Equals(searchValue));
+            return petsByColor;
         }
 
         public IEnumerable<Pet> FindPetsBySpecies(Pet.Species theSearchCriteria)

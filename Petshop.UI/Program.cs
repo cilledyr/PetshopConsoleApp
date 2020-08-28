@@ -13,7 +13,8 @@ namespace Petshop.UI
     class Program
     {
         public static IPetRepository petRepository = PetRepository.Instance;
-        public static IPetService _petService = new PetService(petRepository);
+        public static IOwnerRepository ownerRepository = OwnerRepository.Instance;
+        public static IPetService _petService = new PetService(petRepository, ownerRepository);
         public static Printer printer = new Printer(_petService);
         static void Main(string[] args)
         {

@@ -20,7 +20,7 @@ namespace Petshop.UI
             "6: Cheapest 5 pets",
             "7: Search all pets",
             "8: Go to Owner Menu",
-            "9: Exit Program"
+            "0: Exit Program"
         };
 
         public static List<string> ownerMenuItems = new List<string>
@@ -32,7 +32,7 @@ namespace Petshop.UI
             "5: Edit existing owner",
             "6: Find pets by owner",
             "7: Back to Pet Menu",
-            "8: Exit the program"
+            "0: Exit the program"
         };
         public Printer (IPetService petservice)
         {
@@ -77,11 +77,13 @@ namespace Petshop.UI
                     case 8:
                         DisplayOwnerMenu(userName);
                         break;
-                    case 9:
+                    case 0:
                         ExitProgram(userName);
                         break;
 
                     default:
+                        Console.WriteLine($"Oops, you seem to have selected something invalid, please try again {userName}.");
+                        DisplayMenu(userName);
                         break;
                 }
             }
@@ -114,7 +116,7 @@ namespace Petshop.UI
                         ListAllOwners(userName);
                         break;
                     case 3:
-                        AddNewOwner(userName);
+                        AddTheOwnerFromMenu(userName);
                         break;
                     case 4:
                         DeleteOwner(userName);
@@ -128,11 +130,13 @@ namespace Petshop.UI
                     case 7:
                         DisplayMenu(userName);
                         break;
-                    case 8:
+                    case 0:
                         ExitProgram(userName);
                         break;
 
                     default:
+                        Console.WriteLine($"Oops, you seem to have selected something invalid, please try again {userName}.");
+                        DisplayOwnerMenu(userName);
                         break;
                 }
             }
@@ -142,26 +146,24 @@ namespace Petshop.UI
                 DisplayMenu(userName);
             }
         }
-
-        private void FindPetsByOwner(string userName)
+        private Owner FindOwnerByNameOrID(string userName)
         {
-            Console.WriteLine($"Ok {userName}, please enter the name or the id of the owner whose pets you would like to see:");
             var theName = Console.ReadLine();
             int theId;
             Owner lookingFor = null;
-            if(int.TryParse(theName, out theId))
+            if (int.TryParse(theName, out theId))
             {
                 lookingFor = _petService.FindOwnerByID(theId);
             }
             else
             {
                 List<Owner> theLookedForOwners = _petService.FindOwnersByName(theName);
-                if(theLookedForOwners.Count <= 0)
+                if (theLookedForOwners.Count <= 0)
                 {
                     Console.WriteLine($"I am sorry {userName}, I could not find any owners with that name, please start over.");
                     FindPetsByOwner(userName);
                 }
-                else if(theLookedForOwners.Count == 1)
+                else if (theLookedForOwners.Count == 1)
                 {
                     lookingFor = theLookedForOwners[0];
                 }
@@ -172,76 +174,98 @@ namespace Petshop.UI
                     {
                         Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
                     }
-                    Console.WriteLine($"Please enter the ID of the owner whose pets you want to see:");
-                    if(int.TryParse(Console.ReadLine(), out theId))
+                    Console.WriteLine($"Please enter the ID of the owner you need:");
+                    if (int.TryParse(Console.ReadLine(), out theId))
                     {
                         lookingFor = _petService.FindOwnerByID(theId);
                     }
                     else
                     {
-                        Console.WriteLine($"You have not given me a valid ID, please try again.");
-                        FindPetsByOwner(userName);
+                        throw new InvalidDataException(message: "I am sorry i have found an error, could not find the owner.");
                     }
 
                 }
             }
-            if(lookingFor != null)
+            if(lookingFor == null)
             {
-                List<Pet> allTheFoundPets = _petService.FindAllPetsByOwner(lookingFor);
-                Console.WriteLine($"Here is your complete list of pets owned by {lookingFor.OwnerFirstName} {lookingFor.OwnerLastName}:");
-                foreach ( var pet in allTheFoundPets)
-                {
-                    Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
-                }
-                DisplayOwnerMenu(userName);
+                throw new InvalidDataException(message: "I am sorry i have found an error, could not find the owner.");
             }
+            return lookingFor;
+        }
+
+        private Pet FindPetByNameOrId(string userName)
+        {
+            var theName = Console.ReadLine();
+            int theId;
+            Pet updatedPet = null;
+            if (int.TryParse(theName, out theId))
+            {
+                updatedPet = _petService.FindPetByID(theId);
+            }
+            else
+            {
+                List<Pet> petsByName = _petService.FindPetsByName(theName);
+                if (petsByName.Count <= 0)
+                {
+                    Console.WriteLine($"I am sorry {userName}, i couldn't find any pet by that name, please start over.");
+                    UpdatePet(userName);
+
+                }
+                else if (petsByName.Count == 1)
+                {
+                    updatedPet = _petService.FindPetByID(petsByName[0].PetId);
+                }
+                else
+                {
+                    Console.WriteLine($"I am sorry {userName}, there is more than one pet with that name: \n");
+
+                    foreach (var pet in petsByName)
+                    {
+                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+
+                    }
+
+                    Console.WriteLine($"Please enter the ID of the pet you need:");
+                    var newId = Console.ReadLine();
+                    int theNewId;
+                    if (int.TryParse(newId, out theNewId))
+                    {
+                        updatedPet = _petService.FindPetByID(theNewId);
+                    }
+                    else
+                    {
+                        throw new InvalidDataException(message: "I could not find a pet.");
+                        
+                    }
+                }
+            }
+            if(updatedPet == null)
+            {
+                throw new InvalidDataException(message: "Pet not found.");
+            }
+            return updatedPet;
+        }
+        private void FindPetsByOwner(string userName)
+        {
+            Console.WriteLine($"Ok {userName}, please enter the name or the id of the owner whose pets you would like to see:");
+
+            Owner lookingFor = FindOwnerByNameOrID(userName);
+            List<Pet> allTheFoundPets = _petService.FindAllPetsByOwner(lookingFor);
+            Console.WriteLine($"Here is your complete list of pets owned by {lookingFor.OwnerFirstName} {lookingFor.OwnerLastName}:");
+            foreach ( var pet in allTheFoundPets)
+            {
+                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+            }
+            
+            DisplayOwnerMenu(userName);
+            
         }
 
         private void DeleteOwner(string userName)
         {
             Console.WriteLine($"{userName}, please enter the Name, or ID of the owner you would like to delete: ");
-            var theName = Console.ReadLine();
-            int theId;
-            Owner deletedOwner = null;
-            if (int.TryParse(theName, out theId))
-            {
-                deletedOwner = _petService.DeleteOwnerByID(theId);
-            }
-            else
-            {
-                List<Owner> ownersByName = _petService.FindOwnersByName(theName);
-                if (ownersByName.Count <= 0)
-                {
-                    Console.WriteLine($"I am sorry {userName}, i couldn't find any owners by that name, please start over.");
-                    DeletePet(userName);
-                }
-                else if (ownersByName.Count == 1)
-                {
-                    deletedOwner = _petService.DeleteOwnerByID(ownersByName[0].OwnerId);
-                }
-                else
-                {
-                    Console.WriteLine($"I am sorry {userName}, there is more than one owner with that name: \n");
-
-                    foreach (var owner in ownersByName)
-                    {
-                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
-                    }
-
-                    Console.WriteLine($"Please enter the ID of the owner you want to delete:");
-                    var newId = Console.ReadLine();
-                    int theNewId;
-                    if (int.TryParse(newId, out theNewId))
-                    {
-                        deletedOwner = _petService.DeleteOwnerByID(theNewId);
-                    }
-                    else
-                    {
-                        Console.WriteLine($" I am sorry {userName} have not entered a valid ID, starting over.");
-                        DeletePet(userName);
-                    }
-                }
-            }
+            Owner deletedOwner = FindOwnerByNameOrID(userName);
+            deletedOwner = _petService.DeleteOwnerByID(deletedOwner.OwnerId);
             Console.WriteLine($"{userName}, you have successfully deleted {deletedOwner.OwnerFirstName} {deletedOwner.OwnerLastName}, from your database.");
             DisplayOwnerMenu(userName);
         }
@@ -249,86 +273,44 @@ namespace Petshop.UI
         private void EditOwner(string userName)
         {
             Console.WriteLine($"{userName}, please enter the Name, or ID of the owner you would like to update: ");
-            var theName = Console.ReadLine();
-            int theId;
-            Owner updatedOwner = null;
-            if (int.TryParse(theName, out theId))
+            
+            Owner updatedOwner = FindOwnerByNameOrID(userName);
+            
+            Console.WriteLine($"{userName}, you are updating ID: {updatedOwner.OwnerId} byt the name {updatedOwner.OwnerFirstName} {updatedOwner.OwnerLastName}. What would you like to update, of the following, Please type the nr only.?");
+            Console.WriteLine(" 1: First Name \n 2: LastName \n 3: Address \n 4: Phonenr \n 5: Email \n ");
+            var toUpdate = Console.ReadLine();
+            int toUpdateInt = 0;
+            string updateValue;
+            if (int.TryParse(toUpdate, out toUpdateInt) && toUpdateInt <= 5 && toUpdateInt > 0)
             {
-                updatedOwner = _petService.FindOwnerByID(theId);
-            }
-            else
-            {
-                List<Owner> ownersByName = _petService.FindOwnersByName(theName);
-                if (ownersByName.Count <= 0)
+                switch (toUpdateInt)
                 {
-                    Console.WriteLine($"I am sorry {userName}, i couldn't find any owner by that name, please start over.");
-                    DeleteOwner(userName);
-
-                }
-                else if (ownersByName.Count == 1)
-                {
-                    updatedOwner = _petService.FindOwnerByID(ownersByName[0].OwnerId);
-                }
-                else
-                {
-                    Console.WriteLine($"I am sorry {userName}, there is more than one owner with that name: \n");
-
-                    foreach (var owner in ownersByName)
-                    {
-                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
-                    }
-
-                    Console.WriteLine($"Please enter the ID of the owner you want to update:");
-                    var newId = Console.ReadLine();
-                    int theNewId;
-                    if (int.TryParse(newId, out theNewId))
-                    {
-                        updatedOwner = _petService.FindOwnerByID(theNewId);
-                    }
-                    else
-                    {
-                        Console.WriteLine($" I am sorry {userName}, you have not entered a valid ID, starting over.");
-                        UpdatePet(userName);
-                    }
-                }
-            }
-            if (updatedOwner != null)
-            {
-                Console.WriteLine($"{userName}, you are updating ID: {updatedOwner.OwnerId} byt the name {updatedOwner.OwnerFirstName} {updatedOwner.OwnerLastName}. What would you like to update, of the following, Please type the nr only.?");
-                Console.WriteLine(" 1: First Name \n 2: LastName \n 3: Address \n 4: Phonenr \n 5: Email \n ");
-                var toUpdate = Console.ReadLine();
-                int toUpdateInt = 0;
-                string updateValue;
-                if (int.TryParse(toUpdate, out toUpdateInt) && toUpdateInt <= 5 && toUpdateInt > 0)
-                {
-                    switch (toUpdateInt)
-                    {
-                        case 1:
-                            Console.WriteLine($"What would you like to update the First Name to be? Current first name is: {updatedOwner.OwnerFirstName}.");
-                            break;
-                        case 2:
-                            Console.WriteLine($"What would you like to update the Last Name to be? Current last name is: {updatedOwner.OwnerLastName}.");
-                            break;
-                        case 3:
-                            Console.WriteLine($"What would you like to update the Address to be? Current address is: {updatedOwner.OwnerAddress}");
-                            break;
-                        case 4:
-                            Console.WriteLine($"What would you like to update the Phonenr to be? Current phonenr is: {updatedOwner.OwnerPhoneNr}.");
-                            break;
-                        case 5:
-                            Console.WriteLine($"What would you like to update the Email to be? Current email is: {updatedOwner.OwnerEmail}.");
-                            break;
-                        default:
-                            break;
-                    }
-                    updateValue = Console.ReadLine();
-                    updatedOwner = _petService.UpdateOwner(updatedOwner, toUpdateInt, updateValue);
-                }
+                    case 1:
+                        Console.WriteLine($"What would you like to update the First Name to be? Current first name is: {updatedOwner.OwnerFirstName}.");
+                        break;
+                    case 2:
+                        Console.WriteLine($"What would you like to update the Last Name to be? Current last name is: {updatedOwner.OwnerLastName}.");
+                        break;
+                    case 3:
+                        Console.WriteLine($"What would you like to update the Address to be? Current address is: {updatedOwner.OwnerAddress}");
+                        break;
+                    case 4:
+                        Console.WriteLine($"What would you like to update the Phonenr to be? Current phonenr is: {updatedOwner.OwnerPhoneNr}.");
+                        break;
+                    case 5:
+                        Console.WriteLine($"What would you like to update the Email to be? Current email is: {updatedOwner.OwnerEmail}.");
+                        break;
+                    default:
+                        break;
+                }   
+                updateValue = Console.ReadLine();
+                updatedOwner = _petService.UpdateOwner(updatedOwner, toUpdateInt, updateValue);
+                
             }
 
             else
             {
-                throw new InvalidDataException(message: "I am sorry i have found an error, could not find the owner to update.");
+                throw new InvalidDataException(message: "I am sorry you have not entered a nr.");
             }
 
 
@@ -336,7 +318,7 @@ namespace Petshop.UI
             DisplayOwnerMenu(userName);
         }
 
-        private void AddNewOwner(string userName)
+        private Owner AddNewOwner(string userName)
         {
             Console.WriteLine($"You are about to create a new owner {userName}, what is the first name of this owner?");
             var firstname = Console.ReadLine();
@@ -350,6 +332,12 @@ namespace Petshop.UI
             var email = Console.ReadLine();
 
             Owner theNewOwner = _petService.AddNewOwner(firstname, lastname, address, phonenr, email);
+            return theNewOwner;
+        }
+
+        private void AddTheOwnerFromMenu(string userName)
+        {
+            Owner theNewOwner = AddNewOwner(userName);
             Console.WriteLine($"Nice {userName}, you have successfully added {theNewOwner.OwnerFirstName} {theNewOwner.OwnerLastName} to the Database.");
 
             DisplayOwnerMenu(userName);
@@ -472,102 +460,58 @@ namespace Petshop.UI
         private void UpdatePet(string userName)
         {
             Console.WriteLine($"{userName}, please enter the Name, or ID of the pet you would like to update for: ");
-            var theName = Console.ReadLine();
-            int theId;
-            Pet updatedPet = null;
-            if (int.TryParse(theName, out theId))
+            Pet updatedPet = FindPetByNameOrId(userName);
+                
+            Console.WriteLine($"{userName}, you are updating ID: {updatedPet.PetId} byt the name {updatedPet.PetName}. What would you like to update, of the following, Please type the nr only.?");
+            Console.WriteLine(" 1: Name \n 2: Colour \n 3: Species \n 4: Birthday \n 5: Sold Date \n 6: Previous owner \n 7: Price \n 8: Owner \n");
+            var toUpdate = Console.ReadLine();
+            int toUpdateInt = 0;
+            string updateValue;
+            if(int.TryParse(toUpdate, out toUpdateInt) && toUpdateInt <= 8 && toUpdateInt > 0)
             {
-                updatedPet = _petService.FindPetByID(theId);
-            }
-            else
-            {
-                List<Pet> petsByName = _petService.FindPetsByName(theName);
-                if (petsByName.Count <= 0)
+                switch (toUpdateInt)
                 {
-                    Console.WriteLine($"I am sorry {userName}, i couldn't find any pet by that name, please start over.");
-                    UpdatePet(userName);
-
+                   case 1:
+                       Console.WriteLine($"What would you like to update the Name to be? Current name is: {updatedPet.PetName}.");
+                       break;
+                   case 2:
+                       Console.WriteLine($"What would you like to update the Coulour to be? Current colour is: {updatedPet.PetColor}.");
+                       break;
+                   case 3:
+                       Console.WriteLine($"What would you like to update the Species to be? Current Species is: {updatedPet.PetSpecies}. Select a nr from the list please.");
+                       int theSpeciesNr = 0;
+                       foreach (var theSpecies in Enum.GetNames(typeof(Pet.Species)))
+                       {
+                           theSpeciesNr++;
+                           Console.WriteLine(theSpeciesNr + ": " + theSpecies);
+                       }
+                       break;
+                   case 4:
+                       Console.WriteLine($"What would you like to update the Birthdate to be? Current birthday is: {updatedPet.PetBirthday}. Enter new value in the format dd-mm-yyyy.");
+                       break;
+                   case 5:
+                       Console.WriteLine($"What would you like to update the Sold date  to be? Current sold date is: {updatedPet.PetSoldDate}.Enter new value in the format dd-mm-yyyy.");
+                       break;
+                   case 6:
+                       Console.WriteLine($"What would you like to update the Previous owner to be? Current Previous owner is: {updatedPet.PetPreviousOwner}.");
+                       break;
+                   case 7:
+                       Console.WriteLine($"What would you like to update the Price to be? Current Price is: {updatedPet.PetPrice}£. Please enter the price in £, nr only.");
+                       break;
+                   case 8:
+                        Console.WriteLine($"Please enter the ID of the owner you would like to place this pet under, current owner id: {updatedPet.PetOwner.OwnerId}, name: {updatedPet.PetOwner.OwnerFirstName} {updatedPet.PetOwner.OwnerLastName}");
+                        break;
+                   default:
+                        break;
                 }
-                else if (petsByName.Count == 1)
-                {
-                    updatedPet = _petService.FindPetByID(petsByName[0].PetId);
-                }
-                else
-                {
-                    Console.WriteLine($"I am sorry {userName}, there is more than one pet with that name: \n");
-
-                    foreach (var pet in petsByName)
-                    {
-                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
-
-                    }
-
-                    Console.WriteLine($"Please enter the ID of the pet you want to update:");
-                    var newId = Console.ReadLine();
-                    int theNewId;
-                    if (int.TryParse(newId, out theNewId))
-                    {
-                        updatedPet = _petService.FindPetByID(theNewId);
-                    }
-                    else
-                    {
-                        Console.WriteLine($" I am sorry {userName}, you have not entered a valid ID, starting over.");
-                        UpdatePet(userName);
-                    }
-                }
-            }
-            if(updatedPet != null)
-            {
-                Console.WriteLine($"{userName}, you are updating ID: {updatedPet.PetId} byt the name {updatedPet.PetName}. What would you like to update, of the following, Please type the nr only.?");
-                Console.WriteLine(" 1: Name \n 2: Colour \n 3: Species \n 4: Birthday \n 5: Sold Date \n 6: Previous owner \n 7: Price \n 8: Owner \n");
-                var toUpdate = Console.ReadLine();
-                int toUpdateInt = 0;
-                string updateValue;
-                if(int.TryParse(toUpdate, out toUpdateInt) && toUpdateInt <= 7 && toUpdateInt > 0)
-                {
-                    switch (toUpdateInt)
-                    {
-                        case 1:
-                            Console.WriteLine($"What would you like to update the Name to be? Current name is: {updatedPet.PetName}.");
-                            break;
-                        case 2:
-                            Console.WriteLine($"What would you like to update the Coulour to be? Current colour is: {updatedPet.PetColor}.");
-                            break;
-                        case 3:
-                            Console.WriteLine($"What would you like to update the Species to be? Current Species is: {updatedPet.PetSpecies}. Select a nr from the list please.");
-                            int theSpeciesNr = 0;
-                            foreach (var theSpecies in Enum.GetNames(typeof(Pet.Species)))
-                            {
-                                theSpeciesNr++;
-                                Console.WriteLine(theSpeciesNr + ": " + theSpecies);
-                            }
-                            break;
-                        case 4:
-                            Console.WriteLine($"What would you like to update the Birthdate to be? Current birthday is: {updatedPet.PetBirthday}. Enter new value in the format dd-mm-yyyy.");
-                            break;
-                        case 5:
-                            Console.WriteLine($"What would you like to update the Sold date  to be? Current sold date is: {updatedPet.PetSoldDate}.Enter new value in the format dd-mm-yyyy.");
-                            break;
-                        case 6:
-                            Console.WriteLine($"What would you like to update the Previous owner to be? Current Previous owner is: {updatedPet.PetPreviousOwner}.");
-                            break;
-                        case 7:
-                            Console.WriteLine($"What would you like to update the Price to be? Current Price is: {updatedPet.PetPrice}£. Please enter the price in £, nr only.");
-                            break;
-                        case 8:
-                            Console.WriteLine($"Please enter the ID of the owner you would like to place this pet under, current owner id: {updatedPet.PetOwner.OwnerId}, name: {updatedPet.PetOwner.OwnerFirstName} {updatedPet.PetOwner.OwnerLastName}");
-                            break;
-                        default:
-                            break;
-                    }
-                    updateValue = Console.ReadLine();
-                    updatedPet = _petService.UpdatePet(updatedPet, toUpdateInt, updateValue);
-                }
+               updateValue = Console.ReadLine();
+               updatedPet = _petService.UpdatePet(updatedPet, toUpdateInt, updateValue);
+            
             }
 
             else
             {
-                throw new InvalidDataException(message: "I am sorry i have found an error, could not find the pet to update.");
+                throw new InvalidDataException(message: "I am sorry you have not entered a valid nr.");
             }
 
 
@@ -578,49 +522,8 @@ namespace Petshop.UI
         private void DeletePet(string userName)
         {
             Console.WriteLine($"{userName}, please enter the Name, or ID of the pet you would like to delete: ");
-            var theName = Console.ReadLine();
-            int theId;
-            Pet deletedPet = null;
-            if(int.TryParse(theName, out theId))
-            {
-                deletedPet = _petService.DeletePetByID(theId);
-            }
-            else
-            {
-                List<Pet> petsByName = _petService.FindPetsByName(theName);
-                if (petsByName.Count <= 0)
-                {
-                    Console.WriteLine($"I am sorry {userName}, i couldn't find any pet by that name.");
-                    DeletePet(userName);
-                }
-                else if (petsByName.Count == 1)
-                {
-                    deletedPet = _petService.DeletePetByID(petsByName[0].PetId);
-                }
-                else
-                {
-                    Console.WriteLine($"I am sorry {userName}, there is more than one pet with that name: \n");
-
-                    foreach (var pet in petsByName)
-                    {
-                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
-
-                    }
-
-                    Console.WriteLine($"Please enter the ID of the pet you want to delete:");
-                    var newId = Console.ReadLine();
-                    int theNewId;
-                    if(int.TryParse(newId, out theNewId))
-                    {
-                        deletedPet = _petService.DeletePetByID(theNewId);
-                    }
-                    else
-                    {
-                        Console.WriteLine($" I am sorry {userName} have not entered a valid ID, starting over.");
-                        DeletePet(userName);
-                    }
-                }
-            }
+            Pet deletedPet = FindPetByNameOrId(userName);
+            deletedPet = _petService.DeletePetByID(deletedPet.PetId);
             Console.WriteLine($"{userName}, you have successfully deleted {deletedPet.PetName}, from your database.");
             DisplayMenu(userName);
         }
@@ -671,7 +574,60 @@ namespace Petshop.UI
                 AddNewPet(userName);
             }
 
-            Pet theNewPet = _petService.AddNewPet(thePetName, theSelectedSpecies, theColour, theSelectedBirthday, theSelectedPurchaseDate, thePreviousOwner, thePetPrice);
+            Console.WriteLine($"Almost done {userName}, please enter the name or ID of the owner who owns this pet, enter a negative numeric value to create a new owner.");
+            var ownerID = Console.ReadLine();
+            int theOwnerID;
+            Owner newOwner = null;
+            if(int.TryParse(ownerID, out theOwnerID))
+            {
+                if(theOwnerID >= 0)
+                {
+                    newOwner = _petService.FindOwnerByID(theOwnerID);
+                }
+                else
+                {
+                    Console.WriteLine($"Creating a new owner now");
+                    newOwner = AddNewOwner(userName);
+                }
+            }
+            else
+            {
+                List<Owner> theLookedForOwners = _petService.FindOwnersByName(ownerID);
+                if (theLookedForOwners.Count <= 0)
+                {
+                    Console.WriteLine($"I am sorry {userName}, I could not find any owners with that name, please start over.");
+                    FindPetsByOwner(userName);
+                }
+                else if (theLookedForOwners.Count == 1)
+                {
+                    newOwner = theLookedForOwners[0];
+                }
+                else
+                {
+                    Console.WriteLine($"I am sorry {userName} i have found {theLookedForOwners.Count} Owners by that name:");
+                    foreach (var owner in theLookedForOwners)
+                    {
+                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
+                    }
+                    Console.WriteLine($"Please enter the ID of the owner whose pets you want to see:");
+                    if (int.TryParse(Console.ReadLine(), out theOwnerID))
+                    {
+                        newOwner = _petService.FindOwnerByID(theOwnerID);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"You have not given me a valid ID, please try again.");
+                        FindPetsByOwner(userName);
+                    }
+
+                }
+            }
+            if(newOwner == null)
+            {
+                Console.WriteLine("Something unexpected has gone wrong with the owner, starting over.");
+                AddNewPet(userName);
+            }
+            Pet theNewPet = _petService.AddNewPet(thePetName, theSelectedSpecies, theColour, theSelectedBirthday, theSelectedPurchaseDate, thePreviousOwner, thePetPrice, newOwner);
 
             Console.WriteLine($"Congratulatons {userName}, you have successfully added {theNewPet.PetName}, with the ID: {theNewPet.PetId}. \n");
             DisplayMenu(userName);

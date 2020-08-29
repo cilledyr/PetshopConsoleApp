@@ -32,7 +32,7 @@ namespace Petshop.Core.ApplicationService.Impl
             return _ownerRepo.AddNewOwner(theNewOwner);
         }
 
-        public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, long thePetPrice)
+        public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, long thePetPrice, Owner theOwner)
         {
             Pet theNewPet = new Pet();
             theNewPet.PetName = thePetName;
@@ -68,6 +68,7 @@ namespace Petshop.Core.ApplicationService.Impl
             theNewPet.PetSoldDate = theSelectedPurchaseDate;
             theNewPet.PetPreviousOwner = thePreviousOwner;
             theNewPet.PetPrice = thePetPrice;
+            theNewPet.PetOwner = theOwner;
 
             return  _petRepo.AddNewPet(theNewPet);
 

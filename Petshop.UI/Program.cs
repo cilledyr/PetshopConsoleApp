@@ -14,11 +14,13 @@ namespace Petshop.UI
     {
         public static IPetRepository petRepository = PetRepository.Instance;
         public static IOwnerRepository ownerRepository = OwnerRepository.Instance;
+        public static DataInitializer dataInit = new DataInitializer();
         public static IPetService _petService = new PetService(petRepository, ownerRepository);
         public static Printer printer = new Printer(_petService);
         static void Main(string[] args)
         {
-            PetDB.CreateData();
+            dataInit.InitData();
+            //PetDB.CreateData();
             Console.WriteLine("Welcome to the Petshop please type your name:");
             var userName = Console.ReadLine();
             printer.DisplayMenu(userName);

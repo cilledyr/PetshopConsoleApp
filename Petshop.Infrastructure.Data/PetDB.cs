@@ -11,12 +11,14 @@ namespace Petshop.Infrastructure.Data
     {
         public static IEnumerable<Pet> allThePets { get; set; }
         public static IEnumerable<Owner> allTheOwners { get; set; }
-        public static int thePetCount = 0;
-        public static int theOwnerCount = 0;
+        public static int thePetCount { get; set; }
+        public static int theOwnerCount { get; set; }
 
         
         public static void CreateData()
         {
+            thePetCount = 0;
+            theOwnerCount = 0;
             allTheOwners = new List<Owner>
             {
                 new Owner{OwnerId = theOwnerCount++, OwnerFirstName = "Lars", OwnerLastName = "Rasmussen", OwnerAddress = "SweetStreet 4, 6700 Esbjerg", OwnerPhoneNr = "+45 1234 5678", OwnerEmail = "lars@rasmussen.dk"},

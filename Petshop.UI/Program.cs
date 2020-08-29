@@ -19,8 +19,7 @@ namespace Petshop.UI
         public static Printer printer = new Printer(_petService);
         static void Main(string[] args)
         {
-            dataInit.InitData();
-            //PetDB.CreateData();
+            Console.WriteLine(dataInit.InitData());
             Console.WriteLine("Welcome to the Petshop please type your name:");
             var userName = Console.ReadLine();
             printer.DisplayMenu(userName);

@@ -14,7 +14,7 @@ namespace Petshop.Infrastructure.Data
             
         }
 
-        public void InitData()
+        public string InitData()
         {
             int petCount = 0;
             int ownerCount = 0;
@@ -55,6 +55,7 @@ namespace Petshop.Infrastructure.Data
             PetDB.allTheOwners = allOwners;
             PetDB.allThePets = allPets;
 
+            return "Fake data injected.";
         }
     }
 }

@@ -7,29 +7,9 @@ using System.Text;
 
 namespace Petshop.Infrastructure.Data
 {
-    public sealed class OwnerRepository: IOwnerRepository
+    public class OwnerRepository: IOwnerRepository
     {
-        private static OwnerRepository instance = null;
-        private static readonly object padlock = new object();
-        OwnerRepository()
-        {
-
-        }
-
-        public static OwnerRepository Instance
-        {
-            get
-            {
-                lock (padlock)
-                {
-                    if (instance == null)
-                    {
-                        instance = new OwnerRepository();
-                    }
-                    return instance;
-                }
-            }
-        }
+        
         public IEnumerable<Owner> GetAllOwners()
         {
             return PetDB.allTheOwners;

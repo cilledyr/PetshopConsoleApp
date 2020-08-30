@@ -7,20 +7,41 @@ using Petshop.Core.ApplicationService;
 using Petshop.Core.ApplicationService.Impl;
 using Petshop.Core.DomainService;
 using Petshop.Infrastructure.Data;
+using System.Security.Authentication.ExtendedProtection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Petshop.UI
 {
     class Program
     {
-        public static IPetRepository petRepository = PetRepository.Instance;
-        public static IOwnerRepository ownerRepository = OwnerRepository.Instance;
-        public static DataInitializer dataInit = new DataInitializer(OwnerRepository.Instance, PetRepository.Instance);
-        public static IPetService _petService = new PetService(petRepository, ownerRepository);
-        public static Printer printer = new Printer(_petService);
+        
+        
         static void Main(string[] args)
         {
-            Console.WriteLine(dataInit.InitData());
+            bool devMode = true;
+            var services = new ServiceCollection();
+            services.AddScoped<IOwnerRepository, OwnerRepository>();
+            services.AddScoped<IPetRepository, PetRepository>();
+            services.AddScoped<IPetService, PetService>();
+            services.AddScoped<IOwnerService, OwnerService>();
+
+            var provider = services.BuildServiceProvider();
+
+            var ownerRepo = provider.GetService<IOwnerRepository>();
+            var petRepo = provider.GetService<IPetRepository>();
+            if(devMode)
+            {
+                var dataInit = new DataInitializer(ownerRepo, petRepo);
+                Console.WriteLine(dataInit.InitData()); //I prefer the program telling me that i have injected data.
+            }
+            
+            var petService = provider.GetService<IPetService>();
+            var ownerService = provider.GetService<IOwnerService>();
+
+            var printer = new Printer(petService, ownerService);
+
             Console.WriteLine("Welcome to the Petshop please type your name:");
+            
             var userName = Console.ReadLine();
             printer.DisplayMenu(userName);
         }

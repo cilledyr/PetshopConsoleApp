@@ -9,7 +9,14 @@ namespace Petshop.UI
 {
     public class Printer
     {
-        public static IPetService _petService;
+        private IPetService _petService;
+        private IOwnerService _ownerService;
+        
+        public Printer (IPetService petService, IOwnerService ownerService)
+        {
+            _ownerService = ownerService;
+            _petService = petService;
+        }
         public static List<string> menuItems = new List<string>
         {
             "1: List All Pets",
@@ -34,10 +41,6 @@ namespace Petshop.UI
             "7: Back to Pet Menu",
             "0: Exit the program"
         };
-        public Printer (IPetService petservice)
-        {
-            _petService = petservice;
-        }
         public void DisplayMenu(string userName)
         {
             Console.WriteLine("\n \n");
@@ -153,11 +156,11 @@ namespace Petshop.UI
             Owner lookingFor = null;
             if (int.TryParse(theName, out theId))
             {
-                lookingFor = _petService.FindOwnerByID(theId);
+                lookingFor = _ownerService.FindOwnerByID(theId);
             }
             else
             {
-                List<Owner> theLookedForOwners = _petService.FindOwnersByName(theName);
+                List<Owner> theLookedForOwners = _ownerService.FindOwnersByName(theName);
                 if (theLookedForOwners.Count <= 0)
                 {
                     Console.WriteLine($"I am sorry {userName}, I could not find any owners with that name, please start over.");
@@ -177,7 +180,7 @@ namespace Petshop.UI
                     Console.WriteLine($"Please enter the ID of the owner you need:");
                     if (int.TryParse(Console.ReadLine(), out theId))
                     {
-                        lookingFor = _petService.FindOwnerByID(theId);
+                        lookingFor = _ownerService.FindOwnerByID(theId);
                     }
                     else
                     {
@@ -250,7 +253,7 @@ namespace Petshop.UI
             Console.WriteLine($"Ok {userName}, please enter the name or the id of the owner whose pets you would like to see:");
 
             Owner lookingFor = FindOwnerByNameOrID(userName);
-            List<Pet> allTheFoundPets = _petService.FindAllPetsByOwner(lookingFor);
+            List<Pet> allTheFoundPets = _ownerService.FindAllPetsByOwner(lookingFor);
             Console.WriteLine($"Here is your complete list of pets owned by {lookingFor.OwnerFirstName} {lookingFor.OwnerLastName}:");
             foreach ( var pet in allTheFoundPets)
             {
@@ -265,7 +268,7 @@ namespace Petshop.UI
         {
             Console.WriteLine($"{userName}, please enter the Name, or ID of the owner you would like to delete: ");
             Owner deletedOwner = FindOwnerByNameOrID(userName);
-            deletedOwner = _petService.DeleteOwnerByID(deletedOwner.OwnerId);
+            deletedOwner = _ownerService.DeleteOwnerByID(deletedOwner.OwnerId);
             Console.WriteLine($"{userName}, you have successfully deleted {deletedOwner.OwnerFirstName} {deletedOwner.OwnerLastName}, from your database.");
             DisplayOwnerMenu(userName);
         }
@@ -304,7 +307,7 @@ namespace Petshop.UI
                         break;
                 }   
                 updateValue = Console.ReadLine();
-                updatedOwner = _petService.UpdateOwner(updatedOwner, toUpdateInt, updateValue);
+                updatedOwner = _ownerService.UpdateOwner(updatedOwner, toUpdateInt, updateValue);
                 
             }
 
@@ -331,7 +334,7 @@ namespace Petshop.UI
             Console.WriteLine($"Lastly we ´need {firstname} {lastname}'s email:");
             var email = Console.ReadLine();
 
-            Owner theNewOwner = _petService.AddNewOwner(firstname, lastname, address, phonenr, email);
+            Owner theNewOwner = _ownerService.AddNewOwner(firstname, lastname, address, phonenr, email);
             return theNewOwner;
         }
 
@@ -345,7 +348,7 @@ namespace Petshop.UI
 
         private void ListAllOwners(string userName)
         {
-            List<Owner> allOwners = _petService.GetAllOwners();
+            List<Owner> allOwners = _ownerService.GetAllOwners();
             Console.WriteLine($"Here is a list of all the owners currently registered.");
             foreach (var owner in allOwners)
             {
@@ -367,7 +370,7 @@ namespace Petshop.UI
                     Console.WriteLine("Please enter what to search for below:");
                     searchValue = Console.ReadLine();
 
-                    List<Owner> searchedOwner = _petService.SearchForOwner(toSearchInt, searchValue);
+                    List<Owner> searchedOwner = _ownerService.SearchForOwner(toSearchInt, searchValue);
                     Console.WriteLine($"Here is your result {userName}.");
                     foreach (var owner in searchedOwner)
                     {
@@ -582,7 +585,7 @@ namespace Petshop.UI
             {
                 if(theOwnerID >= 0)
                 {
-                    newOwner = _petService.FindOwnerByID(theOwnerID);
+                    newOwner = _ownerService.FindOwnerByID(theOwnerID);
                 }
                 else
                 {
@@ -592,7 +595,7 @@ namespace Petshop.UI
             }
             else
             {
-                List<Owner> theLookedForOwners = _petService.FindOwnersByName(ownerID);
+                List<Owner> theLookedForOwners = _ownerService.FindOwnersByName(ownerID);
                 if (theLookedForOwners.Count <= 0)
                 {
                     Console.WriteLine($"I am sorry {userName}, I could not find any owners with that name, please start over.");
@@ -612,7 +615,7 @@ namespace Petshop.UI
                     Console.WriteLine($"Please enter the ID of the owner whose pets you want to see:");
                     if (int.TryParse(Console.ReadLine(), out theOwnerID))
                     {
-                        newOwner = _petService.FindOwnerByID(theOwnerID);
+                        newOwner = _ownerService.FindOwnerByID(theOwnerID);
                     }
                     else
                     {

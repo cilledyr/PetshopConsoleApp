@@ -8,30 +8,9 @@ using System.Text;
 
 namespace Petshop.Infrastructure.Data
 {
-    public sealed class PetRepository : IPetRepository
+    public class PetRepository : IPetRepository
     {
-        private static PetRepository instance = null;
-        private static readonly object padlock = new object();
-        PetRepository()
-        {
-
-        }
-
-        public static PetRepository Instance
-        {
-            get
-            {
-                lock (padlock)
-                {
-                    if(instance == null)
-                    {
-                        instance = new PetRepository();
-                    }
-                    return instance;
-                }
-            }
-        }
-
+        
         public IEnumerable<Pet> GetAllPets()
         {
             return PetDB.allThePets;

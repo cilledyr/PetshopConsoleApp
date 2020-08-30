@@ -23,7 +23,7 @@ namespace Petshop.UI
             "2: Add a new pet",
             "3: Delete a pet",
             "4: Update an existing pet",
-            "5: Sort pets",
+            "5: Sort pets by price",
             "6: Cheapest 5 pets",
             "7: Search all pets",
             "8: Go to Owner Menu",

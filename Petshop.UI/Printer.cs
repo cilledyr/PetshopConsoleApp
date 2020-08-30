@@ -143,7 +143,7 @@ namespace Petshop.UI
             else
             {
                 Console.WriteLine("You entered a wrong menu selection, please try again.");
-                DisplayMenu(userName);
+                DisplayOwnerMenu(userName);
             }
         }
         private Owner FindOwnerByNameOrID(string userName)
@@ -161,7 +161,7 @@ namespace Petshop.UI
                 if (theLookedForOwners.Count <= 0)
                 {
                     Console.WriteLine($"I am sorry {userName}, I could not find any owners with that name, please start over.");
-                    FindPetsByOwner(userName);
+                    DisplayMenu(userName);
                 }
                 else if (theLookedForOwners.Count == 1)
                 {
@@ -208,7 +208,7 @@ namespace Petshop.UI
                 if (petsByName.Count <= 0)
                 {
                     Console.WriteLine($"I am sorry {userName}, i couldn't find any pet by that name, please start over.");
-                    UpdatePet(userName);
+                    DisplayMenu(userName);
 
                 }
                 else if (petsByName.Count == 1)
@@ -221,7 +221,7 @@ namespace Petshop.UI
 
                     foreach (var pet in petsByName)
                     {
-                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
 
                     }
 
@@ -423,7 +423,7 @@ namespace Petshop.UI
                 Console.WriteLine($"Here is your result {userName}.");
                 foreach (var pet in searchedPets)
                 {
-                    Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                    Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
                 }
                 DisplayMenu(userName);
             }
@@ -441,7 +441,7 @@ namespace Petshop.UI
             for(int i = 0; i<5; i++ )
             {
                 Pet pet = sortedPets[i];
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
             }
             DisplayMenu(userName);
         }
@@ -452,7 +452,7 @@ namespace Petshop.UI
             Console.WriteLine($"Here is the list of pets sorted by price");
             foreach (var pet in sortedPets)
             {
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
             }
             DisplayMenu(userName);
         }
@@ -654,7 +654,7 @@ namespace Petshop.UI
 
             foreach (var pet in allPets)
             {
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
             }
             DisplayMenu(userName);
         }

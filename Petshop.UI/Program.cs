@@ -14,7 +14,7 @@ namespace Petshop.UI
     {
         public static IPetRepository petRepository = PetRepository.Instance;
         public static IOwnerRepository ownerRepository = OwnerRepository.Instance;
-        public static DataInitializer dataInit = new DataInitializer();
+        public static DataInitializer dataInit = new DataInitializer(OwnerRepository.Instance, PetRepository.Instance);
         public static IPetService _petService = new PetService(petRepository, ownerRepository);
         public static Printer printer = new Printer(_petService);
         static void Main(string[] args)

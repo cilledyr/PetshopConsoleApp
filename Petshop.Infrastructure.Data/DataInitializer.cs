@@ -9,9 +9,10 @@ namespace Petshop.Infrastructure.Data
     {
         private static OwnerRepository _ownerRepo;
         private static PetRepository _petRepo;
-        public DataInitializer()
+        public DataInitializer(OwnerRepository ownerRepository, PetRepository petRepository)
         {
-            
+            _ownerRepo = ownerRepository;
+            _petRepo = petRepository;
         }
 
         public string InitData()
@@ -50,10 +51,15 @@ namespace Petshop.Infrastructure.Data
 
             };
 
-            PetDB.thePetCount = petCount;
-            PetDB.theOwnerCount = ownerCount;
-            PetDB.allTheOwners = allOwners;
-            PetDB.allThePets = allPets;
+            foreach (var owner in allOwners)
+            {
+                Owner theOwner = _ownerRepo.AddNewOwner(owner);
+            }
+
+            foreach (var pet in allPets)
+            {
+                Pet thePet = _petRepo.AddNewPet(pet);
+            }
 
             return "Fake data injected.";
         }

@@ -108,7 +108,15 @@ namespace Petshop.Infrastructure.Data
             theNewOwner.OwnerId = theOwnerCount;
             theOwnerCount++;
             List<Owner> newOwner = new List<Owner> { theNewOwner };
-            allTheOwners = allTheOwners.Concat(newOwner);
+            if(allTheOwners == null)
+            {
+                allTheOwners = newOwner;
+            }
+            else
+            {
+                allTheOwners = allTheOwners.Concat(newOwner);
+            }
+            
             return theNewOwner;
         }
 
@@ -253,7 +261,14 @@ namespace Petshop.Infrastructure.Data
             theNewPet.PetId = thePetCount;
             thePetCount++;
             List<Pet> newPet = new List<Pet> { theNewPet };
-            allThePets = allThePets.Concat(newPet);
+            if(allThePets == null)
+            {
+                allThePets = newPet;
+            }
+            else
+            {
+                allThePets = allThePets.Concat(newPet);
+            }
             return theNewPet;
         }
     }

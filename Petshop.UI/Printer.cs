@@ -149,6 +149,16 @@ namespace Petshop.UI
                 DisplayOwnerMenu(userName);
             }
         }
+
+        private void PrintOwner(Owner owner)
+        {
+            Console.WriteLine($"Owner Id: {owner.OwnerId},\n Name: {owner.OwnerFirstName} {owner.OwnerLastName},\n Address: {owner.OwnerAddress},\n Phonenr: {owner.OwnerPhoneNr},\n Email: {owner.OwnerEmail}\n");
+        }
+
+        private void PrintPet(Pet pet)
+        {
+            Console.WriteLine($"Pet: ID: {pet.PetId},\n Species: {pet.PetSpecies},\n Name: {pet.PetName},\n Colour: {pet.PetColor},\n Birthday: {pet.PetBirthday},\n Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName},\n Previous Owner: {pet.PetPreviousOwner},\n PurchaseDate: {pet.PetSoldDate},\n Price: {pet.PetPrice}£\n");
+        }
         private Owner FindOwnerByNameOrID(string userName)
         {
             var theName = Console.ReadLine();
@@ -175,7 +185,7 @@ namespace Petshop.UI
                     Console.WriteLine($"I am sorry {userName} i have found {theLookedForOwners.Count} Owners by that name:");
                     foreach (var owner in theLookedForOwners)
                     {
-                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
+                        PrintOwner(owner);
                     }
                     Console.WriteLine($"Please enter the ID of the owner you need:");
                     if (int.TryParse(Console.ReadLine(), out theId))
@@ -220,11 +230,11 @@ namespace Petshop.UI
                 }
                 else
                 {
-                    Console.WriteLine($"I am sorry {userName}, there is more than one pet with that name: \n");
+                    Console.WriteLine($"I am sorry {userName}, there are {petsByName.Count} pets with that name: \n");
 
                     foreach (var pet in petsByName)
                     {
-                        Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                        PrintPet(pet);
 
                     }
 
@@ -257,7 +267,8 @@ namespace Petshop.UI
             Console.WriteLine($"Here is your complete list of pets owned by {lookingFor.OwnerFirstName} {lookingFor.OwnerLastName}:");
             foreach ( var pet in allTheFoundPets)
             {
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                Console.WriteLine($"Pet: ID: {pet.PetId},\n Species: {pet.PetSpecies},\n Name: {pet.PetName},\n Colour: {pet.PetColor},\n Birthday: {pet.PetBirthday},\n Previous Owner: {pet.PetPreviousOwner},\n PurchaseDate: {pet.PetSoldDate},\n Price: {pet.PetPrice}£\n");
+                //Not using PrintPet(pet) as i don't want to display the current owner again.
             }
             
             DisplayOwnerMenu(userName);
@@ -352,7 +363,7 @@ namespace Petshop.UI
             Console.WriteLine($"Here is a list of all the owners currently registered.");
             foreach (var owner in allOwners)
             {
-                Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
+                PrintOwner(owner);
             }
             DisplayOwnerMenu(userName);
         }
@@ -374,7 +385,7 @@ namespace Petshop.UI
                     Console.WriteLine($"Here is your result {userName}.");
                     foreach (var owner in searchedOwner)
                     {
-                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
+                        PrintOwner(owner);
                     }
                     DisplayOwnerMenu(userName);
                 }
@@ -426,7 +437,7 @@ namespace Petshop.UI
                 Console.WriteLine($"Here is your result {userName}.");
                 foreach (var pet in searchedPets)
                 {
-                    Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                    PrintPet(pet);
                 }
                 DisplayMenu(userName);
             }
@@ -444,7 +455,7 @@ namespace Petshop.UI
             for(int i = 0; i<5; i++ )
             {
                 Pet pet = sortedPets[i];
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                PrintPet(pet);
             }
             DisplayMenu(userName);
         }
@@ -455,7 +466,7 @@ namespace Petshop.UI
             Console.WriteLine($"Here is the list of pets sorted by price");
             foreach (var pet in sortedPets)
             {
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                PrintPet(pet);
             }
             DisplayMenu(userName);
         }
@@ -578,6 +589,7 @@ namespace Petshop.UI
             }
 
             Console.WriteLine($"Almost done {userName}, please enter the name or ID of the owner who owns this pet, enter a negative numeric value to create a new owner.");
+            //Can't use method FindOwnerByNameOrID as i need to be able to create a new one in the same menu.
             var ownerID = Console.ReadLine();
             int theOwnerID;
             Owner newOwner = null;
@@ -610,7 +622,7 @@ namespace Petshop.UI
                     Console.WriteLine($"I am sorry {userName} i have found {theLookedForOwners.Count} Owners by that name:");
                     foreach (var owner in theLookedForOwners)
                     {
-                        Console.WriteLine($"Owner Id: {owner.OwnerId}, Name: {owner.OwnerFirstName} {owner.OwnerLastName}, Address: {owner.OwnerAddress}, Phonenr: {owner.OwnerPhoneNr}, Email: {owner.OwnerEmail}");
+                        PrintOwner(owner);
                     }
                     Console.WriteLine($"Please enter the ID of the owner whose pets you want to see:");
                     if (int.TryParse(Console.ReadLine(), out theOwnerID))
@@ -657,7 +669,7 @@ namespace Petshop.UI
 
             foreach (var pet in allPets)
             {
-                Console.WriteLine($"Pet: ID: {pet.PetId}, Species: {pet.PetSpecies}, Name: {pet.PetName}, Colour: {pet.PetColor}, Birthday: {pet.PetBirthday}, Owner: {pet.PetOwner.OwnerFirstName} {pet.PetOwner.OwnerLastName}, Previous Owner: {pet.PetPreviousOwner}, PurchaseDate: {pet.PetSoldDate}, Price: {pet.PetPrice}£");
+                PrintPet(pet);
             }
             DisplayMenu(userName);
         }
